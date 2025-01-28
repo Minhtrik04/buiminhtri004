@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xem Kỷ Niệm</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to bottom, #FFD700, #FFFACD);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #444;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Các phần tử bông hoa mai vẫn như trước */
+        .mai {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: radial-gradient(circle, #FFDD00 60%, #FFA500 100%);
+            border-radius: 50%;
+            box-shadow: 0 0 10px 2px rgba(255, 215, 0, 0.8);
+            animation: float 5s ease-in-out infinite;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: -1; /* Đặt hoa mai nằm dưới các phần tử khác */
+        }
+
+        /* Hiệu ứng nổi cho hoa mai */
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            50% {
+                transform: translateY(-20px);
+                opacity: 0.7;
+            }
+        }
+
+        .card {
+            background: white;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 20px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            overflow: hidden;
+            animation: slide-in 1s ease-out;
+            z-index: 2; /* Đảm bảo thẻ card nằm trên các phần tử hoa mai */
+        }
+
+        @keyframes slide-in {
+            from {
+                transform: translateY(-100%);
+            }
+            to {
+                transform: translateY(0);
+            }
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #f39c12, #f1c40f);
+            color: white;
+            padding: 20px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .card-body {
+            padding: 20px;
+            font-size: 18px;
+        }
+
+        .card-body p {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+
+        .heart {
+            color: red;
+            font-size: 48px;
+            margin: 20px 0;
+            animation: heartbeat 1.5s infinite;
+        }
+
+        @keyframes heartbeat {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.2);
+            }
+        }
+
+        .qr-container {
+            margin: 20px 0;
+        }
+
+        .qr-container img {
+            width: 150px;
+            height: 150px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            transition: transform 0.5s ease;
+        }
+
+        .card-footer {
+            background: #fad0c4;
+            padding: 15px;
+            font-size: 16px;
+        }
+
+        .button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            background: #ff6f61;
+            color: white;
+            text-transform: uppercase;
+            font-weight: bold;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .button:hover {
+            background: #d64545;
+        }
+
+        .random-chuc {
+            font-style: italic;
+            font-size: 20px;
+            margin-top: 10px;
+            animation: glow 1s infinite alternate;
+            background: linear-gradient(90deg, #f39c12, #e74c3c, #f39c12);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        @keyframes glow {
+            from {
+                filter: brightness(1);
+            }
+            to {
+                filter: brightness(1.5);
+            }
+        }
+
+        .popup-message {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            z-index: 1000;
+        }
+
+        .popup-message img {
+            width: 300px;
+            height: 300px;
+            margin-bottom: 10px;
+            border: 3px solid #ff6f61;
+            border-radius: 15px;
+        }
+
+        .popup-message p {
+            font-size: 20px;
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        /* Sửa lại z-index để video nằm trên tất cả các phần tử khác */
+        .video-container {
+            display: none;
+            position: absolute;
+            top: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            z-index: 3; /* Đảm bảo video nằm trên phong bì lời chúc */
+        }
+
+        .video-container video {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
+
+        .close-video {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: red;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        .close-video:hover {
+            background: darkred;
+        }
+    </style>
+</head>
+<body>
+    <audio autoplay loop>
+        <source src="music.mp3" type="audio/mp3">
+        Your browser does not support the audio element.
+    </audio>
+
+    <div class="mai"></div>
+    <div class="mai"></div>
+    <div class="mai"></div>
+    <div class="mai"></div>
+    <div class="mai"></div>
+    <div class="mai"></div>
+    <div class="mai"></div>
+    <div class="mai"></div>
+    <div class="mai"></div>
+    <div class="mai"></div>
+
+    <div class="card">
+        <div class="card-header">Năm Mới Vui Vẻ</div>
+        <div class="card-body">
+            <p>Chúc anh/chị/bạn năm mới an khang thịnh vượng, vạn sự như ý!</p>
+            <p>Để lì xì cho "MINH TRÍ", hãy quét mã QR bên dưới nhé!
+                "Nhấn Quét mã ngay để hình to hơn cho dễ quét nhé!"
+                "Nhấn Xem kỹ niệm để xem video nhe!"
+            </p>
+            <div class="heart">&hearts;</div>
+            <div class="qr-container">
+                <img id="qrCode" src="bank.jpg" alt="QR Code">
+            </div>
+            <div class="random-chuc" id="randomChuc"></div>
+            <button class="button" onclick="showPopup()">Quét mã ngay!</button>
+
+            <!-- Nút Xem kỷ niệm -->
+            <button class="button" onclick="showVideo()">Xem kỷ niệm</button>
+        </div>
+        <div class="card-footer">Gửi anh/chị/bạn những lời chúc tốt đẹp nhất!</div>
+    </div>
+
+    <div class="overlay" id="overlay"></div>
+    <div class="popup-message" id="popupMessage">
+        <img src="bank.jpg" alt="QR Code Zoomed">
+        <p>Nhiêu cũng được trên 50 nhé!</p>
+        <button class="button" onclick="hidePopup()">Đóng</button>
+    </div>
+
+    <!-- Video Container -->
+    <div class="video-container" id="videoContainer">
+        <button class="close-video" onclick="closeVideo()">X</button>
+        <video controls autoplay>
+            <source src="video.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+
+    <script>
+        const chucList = [
+            "Tiền vô như nước, sức khỏe như ý!",
+            "Công danh rộng mở, hạnh phúc ngập tràn!",
+            "Học hành tấn tới, làm việc như ý!",
+            "Gia đình êm ấm, tràn đầy tiếng cười!"
+        ];
+
+        function generateRandomChuc() {
+            const randomIndex = Math.floor(Math.random() * chucList.length);
+            document.getElementById('randomChuc').innerText = chucList[randomIndex];
+        }
+
+        function showPopup() {
+            document.getElementById('popupMessage').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+        }
+
+        function hidePopup() {
+            document.getElementById('popupMessage').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+        }
+
+        // Show video when the button is clicked
+        function showVideo() {
+            document.getElementById('videoContainer').style.display = 'block';
+        }
+
+        // Close video
+        function closeVideo() {
+            document.getElementById('videoContainer').style.display = 'none';
+        }
+
+        // Generate an initial random blessing
+        generateRandomChuc();
+    </script>
+</body>
+</html>
